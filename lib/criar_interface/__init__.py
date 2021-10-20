@@ -14,11 +14,11 @@ class RTE(QMainWindow):
 
         self.editor = QTextEdit()
         self.caixa_tamanho_fonte = QSpinBox()
-        font = QFont('Arials', 16)
+        font = QFont('Arials', 12)
         self.editor.setFont(font)
         self.caminho = ""
         self.setCentralWidget(self.editor)
-        self.editor.setFontPointSize(24)
+        self.editor.setFontPointSize(12)
 
         self.criar_menu()
         self.criar_barra_ferramentas()
@@ -30,97 +30,105 @@ class RTE(QMainWindow):
         menu_principal = self.menuBar()
 
         # cria e configura o menu file
-        fileMenu = menu_principal.addMenu('File')
+        file_menu = menu_principal.addMenu('File')
 
-        novoAction = QAction(QIcon(r'lib/criar_interface/img/new.jpg'), 'Novo Arquivo', self)
-        fileMenu.addAction(novoAction)
+        novo_action = QAction(QIcon(r'lib/criar_interface/img/new.jpg'), 'Novo Arquivo', self)
+        novo_action.triggered.connect(self.novo_arquivo)
+        file_menu.addAction(novo_action)
 
-        abrirAction = QAction(QIcon(r'lib/criar_interface/img/open.jpg'), 'Abrir Arquivo', self)
-        fileMenu.addAction(abrirAction)
+        file_menu.addSeparator()
 
-        fileMenu.addSeparator()
+        salvar_action = QAction(QIcon(r'lib/criar_interface/img/save.jpg'), 'Salvar Arquivo', self)
+        salvar_action.setShortcut('ctrl+s')
+        salvar_action.triggered.connect(self.salvar_arquivo)
+        file_menu.addAction(salvar_action)
 
-        salvarAction = QAction(QIcon(r'lib/criar_interface/img/save.jpg'), 'Salvar Arquivo', self)
-        salvarAction.setShortcut('ctrl+s')
-        salvarAction.triggered.connect(self.salvar_arquivo)
-        fileMenu.addAction(salvarAction)
+        save_pdf_action = QAction('Salvar como PDF', self)
+        save_pdf_action.triggered.connect(self.salvar_pdf)
+        file_menu.addAction(save_pdf_action)
 
-        fileMenu.addSeparator()
+        file_menu.addSeparator()
 
-        fecharAction = QAction(QIcon(r'lib/criar_interface/img/close.jpg'), 'Fechar Janela', self)
-        fecharAction.setShortcut('ctrl+e')
-        fecharAction.triggered.connect(self.fechar_janela)
-        fileMenu.addAction(fecharAction)
+        fechar_action = QAction(QIcon(r'lib/criar_interface/img/close.jpg'), 'Fechar Janela', self)
+        fechar_action.setShortcut('ctrl+e')
+        fechar_action.triggered.connect(self.fechar_janela)
+        file_menu.addAction(fechar_action)
 
         # cria e configura o menu edit
         editMenu = menu_principal.addMenu('Edit')
 
-        self.desfazerAction = QAction(QIcon('lib/criar_interface/img/undo.jpg'), 'undo', self)
-        self.desfazerAction.triggered.connect(self.editor.undo)
-        self.desfazerAction.setShortcut('ctrl+z')
-        editMenu.addAction(self.desfazerAction)
+        self.desfazer_action = QAction(QIcon('lib/criar_interface/img/undo.jpg'), 'Desfazer', self)
+        self.desfazer_action.triggered.connect(self.editor.undo)
+        self.desfazer_action.setShortcut('ctrl+z')
+        editMenu.addAction(self.desfazer_action)
 
-        self.refazerAction = QAction(QIcon('lib/criar_interface/img/redo.jpg'), 'redo', self)
-        self.refazerAction.setShortcut('ctrl+shift+z')
-        self.refazerAction.triggered.connect(self.editor.redo)
-        editMenu.addAction(self.refazerAction)
-
-        self.copiarAction = QAction(QIcon(r'lib/criar_interface/img/copy.jpg'), 'Copiar', self)
-        self.copiarAction.setShortcut('ctrl+c')
-        editMenu.addAction(self.copiarAction)
-
-        self.recortarAction = QAction(QIcon(r'lib/criar_interface/img/cut.jpg'), 'Recortar', self)
-        self.recortarAction.setShortcut('ctrl+x')
-        editMenu.addAction(self.recortarAction)
-
-        self.colarAction = QAction(QIcon(r'lib/criar_interface/img/paste.jpg'), 'Colar', self)
-        self.colarAction.setShortcut('ctrl+v')
-        editMenu.addAction(self.colarAction)
+        self.refazer_action = QAction(QIcon('lib/criar_interface/img/redo.jpg'), 'Refazer', self)
+        self.refazer_action.setShortcut('ctrl+shift+z')
+        self.refazer_action.triggered.connect(self.editor.redo)
+        editMenu.addAction(self.refazer_action)
 
         editMenu.addSeparator()
 
-        self.fonteAction = QAction(QIcon(r'lib/criar_interface/img/text.jpg'), 'Fonte', self)
-        self.fonteAction.setShortcut('ctrl+f')
-        self.fonteAction.triggered.connect(self.dialogo_fonte)
-        editMenu.addAction(self.fonteAction)
+        self.copiar_action = QAction(QIcon(r'lib/criar_interface/img/copy.jpg'), 'Copiar', self)
+        self.copiar_action.setShortcut('ctrl+c')
+        self.copiar_action.triggered.connect(self.editor.copy)
+        editMenu.addAction(self.copiar_action)
 
-        self.corAction = QAction(QIcon(r'lib/criar_interface/img/color.jpg'), 'Cor', self)
-        self.corAction.triggered.connect(self.dialogoCor)
-        editMenu.addAction(self.corAction)
+        self.recortar_action = QAction(QIcon(r'lib/criar_interface/img/cut.jpg'), 'Recortar', self)
+        self.recortar_action.setShortcut('ctrl+x')
+        self.recortar_action.triggered.connect(self.editor.cut)
+        editMenu.addAction(self.recortar_action)
+
+        self.colar_action = QAction(QIcon(r'lib/criar_interface/img/paste.jpg'), 'Colar', self)
+        self.colar_action.setShortcut('ctrl+v')
+        self.colar_action.triggered.connect(self.editor.paste)
+        editMenu.addAction(self.colar_action)
 
         editMenu.addSeparator()
 
-        self.alinhaDireitaAction = QAction(QIcon(r'lib/criar_interface/img/right.jpg'), 'Right Allign', self)
-        self.alinhaDireitaAction.triggered.connect(lambda: self.editor.setAlignment(Qt.AlignRight))
-        editMenu.addAction(self.alinhaDireitaAction)
+        self.fonte_action = QAction(QIcon(r'lib/criar_interface/img/text.jpg'), 'Fonte', self)
+        self.fonte_action.setShortcut('ctrl+f')
+        self.fonte_action.triggered.connect(self.dialogo_fonte)
+        editMenu.addAction(self.fonte_action)
 
-        self.alinhaEsquerdaAction = QAction(QIcon(r'lib/criar_interface/img/left.jpg'), 'left Allign', self)
-        self.alinhaEsquerdaAction.triggered.connect(lambda: self.editor.setAlignment(Qt.AlignLeft))
-        editMenu.addAction(self.alinhaEsquerdaAction)
+        self.cor_action = QAction(QIcon(r'lib/criar_interface/img/color.jpg'), 'Cor', self)
+        self.cor_action.triggered.connect(self.dialogo_cor)
+        editMenu.addAction(self.cor_action)
 
-        self.alinhaCentroAction = QAction(QIcon(r'lib/criar_interface/img/center.jpg'), 'Center Allign', self)
-        self.alinhaCentroAction.triggered.connect(lambda: self.editor.setAlignment(Qt.AlignCenter))
-        editMenu.addAction(self.alinhaCentroAction)
+        editMenu.addSeparator()
+
+        self.alinhaDireita_action = QAction(QIcon(r'lib/criar_interface/img/left.jpg'), 'Left Allign', self)
+        self.alinhaDireita_action.triggered.connect(lambda: self.editor.setAlignment(Qt.AlignLeft))
+        editMenu.addAction(self.alinhaDireita_action)
+
+        self.alinhaCentro_action = QAction(QIcon(r'lib/criar_interface/img/center.jpg'), 'Center Allign', self)
+        self.alinhaCentro_action.triggered.connect(lambda: self.editor.setAlignment(Qt.AlignCenter))
+        editMenu.addAction(self.alinhaCentro_action)
+
+        self.alinhaEsquerda_action = QAction(QIcon(r'lib/criar_interface/img/right.jpg'), 'Right Allign', self)
+        self.alinhaEsquerda_action.triggered.connect(lambda: self.editor.setAlignment(Qt.AlignRight))
+        editMenu.addAction(self.alinhaEsquerda_action)
 
         # cria e configura o menu view
         # viewMenu = menu_principal.addMenu('View')
 
     def criar_barra_ferramentas(self):
         # cria e configura a barra_ferramentas
+
         barra_ferramentas = self.addToolBar('Barra de Ferramentas')
-        barra_ferramentas.addAction(self.desfazerAction)
-        barra_ferramentas.addAction(self.refazerAction)
+        barra_ferramentas.addAction(self.desfazer_action)
+        barra_ferramentas.addAction(self.refazer_action)
 
         barra_ferramentas.addSeparator()
 
-        barra_ferramentas.addAction(self.copiarAction)
-        barra_ferramentas.addAction(self.recortarAction)
-        barra_ferramentas.addAction(self.colarAction)
+        barra_ferramentas.addAction(self.copiar_action)
+        barra_ferramentas.addAction(self.recortar_action)
+        barra_ferramentas.addAction(self.colar_action)
 
         barra_ferramentas.addSeparator()
 
-        barra_ferramentas.addAction(self.fonteAction)
-        barra_ferramentas.addAction(self.corAction)
+        barra_ferramentas.addAction(self.fonte_action)
+        barra_ferramentas.addAction(self.cor_action)
 
         self.caixaFonte = QComboBox(self)
         self.caixaFonte.addItems(['Arial', "Courier New", 'Constantia', 'Gill Sans MT', 'Freestyle Script', 'c',
@@ -128,15 +136,22 @@ class RTE(QMainWindow):
         self.caixaFonte.activated.connect(self.set_fonte)
         barra_ferramentas.addWidget(self.caixaFonte)
 
-        self.caixaTamanhoFonte.setValue(24)
-        self.caixaTamanhoFonte.valueChanged.connect(self.set_font_size)
-        barra_ferramentas.addWidget(self.caixaTamanhoFonte)
+        self.caixa_tamanho_fonte.setValue(12)
+        self.caixa_tamanho_fonte.valueChanged.connect(self.set_tamanho_fonte)
+        barra_ferramentas.addWidget(self.caixa_tamanho_fonte)
 
-        barra_ferramentas.addAction(self.alinhaDireitaAction)
-        barra_ferramentas.addAction(self.alinhaEsquerdaAction)
-        barra_ferramentas.addAction(self.alinhaCentroAction)
+        barra_ferramentas.addAction(self.alinhaDireita_action)
+        barra_ferramentas.addAction(self.alinhaCentro_action)
+        barra_ferramentas.addAction(self.alinhaEsquerda_action)
 
     # funções do menu file
+    def novo_arquivo(self):
+        self.editor.setText('')
+        font = QFont('Arials', 12)
+        self.editor.setFont(font)
+        self.caminho = ""
+        self.editor.setFontPointSize(12)
+
     def salvar_arquivo(self):
         print(self.caminho)
         if self.caminho == '':
@@ -161,6 +176,16 @@ class RTE(QMainWindow):
                 self.update_title()
         except Exception as e:
             print(e)
+
+    def salvar_pdf(self):
+        f_name, _ = QFileDialog.getSaveFileName(self, "Export PDF", None, "PDF files (.pdf);;All files()")
+        print(f_name)
+
+        if f_name != '':
+            printer = QPrinter(QPrinter.HighResolution)
+            printer.setOutputFormat(QPrinter.PdfFormat)
+            printer.setOutputFileName(f_name)
+            self.editor.document().print_(printer)
 
     def fechar_janela(self):
         self.close()
